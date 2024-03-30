@@ -6,14 +6,13 @@ import CommentCount from './CommentCount';
 import LikeCount from './LikeCount';
 
 type FeedItemProps = {
-  key: number;
   contents: Contents;
 };
 
-export default function FeedItem({ key, contents }: FeedItemProps) {
+export default function FeedItem({ contents }: FeedItemProps) {
   return (
-    <div key={key} className="flex flex-col gap-4 border-b border-gray-200 p-5">
-      <ChannelBadge channelName={contents.channel} />
+    <div className="flex flex-col gap-4 border-b border-gray-200 p-5">
+      <ChannelBadge channelName={contents.channel.name} />
 
       {/* profile */}
       <div className="flex items-center gap-2">

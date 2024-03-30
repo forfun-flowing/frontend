@@ -14,7 +14,13 @@ export default function Feed() {
       <Header>
         <Header.FeedHeader>피드</Header.FeedHeader>
       </Header>
-      {feed?.map(({ id, contents, images }) => <FeedItem key={id} contents={contents} />)}
+      <ul>
+        {feed?.map(({ id, contents }) => (
+          <li key={id}>
+            <FeedItem contents={contents} />
+          </li>
+        ))}
+      </ul>
       <BottomTabBar />
     </div>
   );

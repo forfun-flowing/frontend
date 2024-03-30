@@ -4,7 +4,12 @@ export type Contents = {
   age: number;
   region: string;
   content: string;
-  channel: string;
+  channel: {
+    id: number;
+    name: string;
+    title: string;
+    subTitle: string;
+  };
   viewCount: number;
   likeCount: number;
   commentCount: number;
