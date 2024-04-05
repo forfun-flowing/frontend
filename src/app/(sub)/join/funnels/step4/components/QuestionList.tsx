@@ -10,7 +10,7 @@ import { usePostValueResponse } from '@/apis/profile';
 import { type Value, useGetValueQuestion } from '@/apis/question';
 import { Button, ButtonWrapper } from '@/components/Button';
 import Spacing from '@/components/Spacing';
-import useToast from '@/hooks/useToast';
+import { useDynamicTextareaHeight, useToast } from '@/hooks';
 import { cn } from '@/utils';
 
 import type { useFunnelContext } from '../../../components/FunnelContext';
@@ -20,11 +20,17 @@ import { VALUE_CATEGORIES } from './TabBar';
 export default function QuestionList({
   nextStep,
 }: Pick<ReturnType<typeof useFunnelContext>, 'nextStep'>) {
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { tab } = useStep4Context();
   const { openToast } = useToast();
+  const { textareaRef, handleResizeHeight } = useDynamicTextareaHeight();
 
-  const { handleSubmit, control, resetField, watch } = useForm();
+  const {
+    handleSubmit,
+    control,
+    resetField,
+    watch,
+    formState: { isValid },
+  } = useForm();
   const watchFields = watch();
 
   const [selectedLife, setSelectedLife] = useState<number[]>([]);
@@ -85,11 +91,12 @@ export default function QuestionList({
     }
   };
 
-  const handleResizeHeight = () => {
-    if (!textareaRef.current) return;
+  const checkAnswersHaveAllTypes = () => {
+    const lifeAnswered = selectedLife.some((id) => watchFields[id.toString()]);
+    const jobAnswered = selectedJob.some((id) => watchFields[id.toString()]);
+    const loveAnswered = selectedLove.some((id) => watchFields[id.toString()]);
 
-    textareaRef.current.style.height = 'auto';
-    textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    return lifeAnswered && jobAnswered && loveAnswered;
   };
 
   const handleOnSubmit: SubmitHandler<Record<number, string>> = (data) => {
@@ -109,7 +116,7 @@ export default function QuestionList({
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
       <ul className="flex flex-col gap-y-3">
-        {question.map(({ id, type, question }) => (
+        {question?.map(({ id, type, question }) => (
           <motion.li
             layout="position"
             key={id}
@@ -146,9 +153,11 @@ export default function QuestionList({
                       ref={(e) => {
                         textareaRef.current = e;
                       }}
+                      minLength={20}
+                      maxLength={500}
                       placeholder="답변을 적어주세요."
                       onInput={handleResizeHeight}
-                      className="h-auto w-full resize-none px-5 text-sm outline-none placeholder:text-gray-500"
+                      className="h-auto w-full resize-none px-5 text-sm outline-none transition-all placeholder:text-gray-500"
                     />
                   )}
                 />
@@ -160,9 +169,7 @@ export default function QuestionList({
       </ul>
       <Spacing size={22} />
       <ButtonWrapper>
-        <Button disabled={Object.values(watchFields).filter((value) => value).length !== 9}>
-          다음
-        </Button>
+        <Button disabled={!checkAnswersHaveAllTypes() || !isValid}>다음</Button>
       </ButtonWrapper>
     </form>
   );
