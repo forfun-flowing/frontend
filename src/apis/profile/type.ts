@@ -25,12 +25,15 @@ export type ImageResponse = {
 
 export type ValueResponse = {
   id: number;
+  type: '인생' | '일' | '사랑';
   question: string;
   response: string;
 };
 
-export type ValueRequest = Omit<ValueResponse, 'question'>;
+export type ValueRequest = Omit<ValueResponse, 'question' | 'type'>;
 
 export type SelfIntroRequest = SelfIntroResponse & {
   address: Omit<AddressResponse, 'id'>;
 };
+
+export type BodyType = '마름' | '탄탄 슬림' | '보통' | '통통' | '근육' | '탄탄_슬림';
