@@ -11,7 +11,7 @@ type BackButtonProps = {
 export default function BackButton({ isDark }: BackButtonProps) {
   const router = useRouter();
   return (
-    <button onClick={() => router.back()}>
+    <button type="button" onClick={() => router.back()}>
       <LeftArrow isDark={isDark} />
     </button>
   );
