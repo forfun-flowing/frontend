@@ -1,4 +1,3 @@
-import type { FeedChannelType } from '@/apis/feed';
 import { cn } from '@/utils';
 
 const channelStyle = [
@@ -11,7 +10,7 @@ const channelStyle = [
 ];
 
 type ChannelBadgeProps = {
-  name: FeedChannelType['name'];
+  name: ChannelType['name'];
 };
 
 export default function ChannelBadge({ name }: ChannelBadgeProps) {
