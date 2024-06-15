@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 
 import { MemberResponse, useGetMember } from '@/apis/member';
-import { queryKeys } from '@/apis/member/keys';
 import {
   ValueResponse,
   usePostProfileImage,
@@ -16,6 +15,7 @@ import {
   usePostValueResponse,
 } from '@/apis/profile';
 import { Button, ButtonWrapper } from '@/components/Button';
+import Divider from '@/components/Divider';
 import ProfileCard from '@/components/ProfileCard';
 import Spacing from '@/components/Spacing';
 import TextField from '@/components/TextField';
@@ -42,7 +42,6 @@ export default function ProfileForm() {
   const { mutate: postSelfIntro, isPending: isPendingPostSelfIntro } = usePostSelfIntro();
   const { mutate: postValueResponse, isPending: isPendingPostValueResponse } =
     usePostValueResponse();
-  const queryClient = useQueryClient();
 
   const { openToast } = useToast();
 
@@ -62,22 +61,10 @@ export default function ProfileForm() {
       postSelfIntro({
         ...member.profile.selfIntro,
         address: member.profile.address,
-        mbti: 'ENFP', // TODO: getMember에 mbti가 없어서 임시
         keywords: keywords.join(','),
       }),
-      postValueResponse(
-        valueResponses.map(({ id, response }) => ({ id, response })),
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.getMember(decodeAccessToken()),
-            });
-          },
-        },
-      ),
-    ]);
-
-    router.push(`/profile/approved/${decodeAccessToken()}`);
+      postValueResponse(valueResponses.map(({ id, response }) => ({ id, response }))),
+    ]).then(() => router.push(`/profile/approved/${decodeAccessToken()}`));
   };
 
   useEffect(() => {
@@ -86,12 +73,14 @@ export default function ProfileForm() {
 
       setValue(
         'valueResponses',
-        member.profile.valueResponses.map(({ id, type, question, response }) => ({
-          id,
-          type,
-          question,
-          response,
-        })),
+        member.profile.valueResponses
+          .sort((a, b) => a.id - b.id)
+          .map(({ id, type, question, response }) => ({
+            id,
+            type,
+            question,
+            response,
+          })),
       );
     }
   }, [member]);
@@ -124,7 +113,7 @@ export default function ProfileForm() {
       <Spacing size={32} />
       <MyKeyword />
       <Spacing size={32} />
-      <div className="absolute inset-x-0 h-2 w-full bg-gray-100" />
+      <Divider />
       <Spacing size={32} />
       <ValueResponseList
         valueResponses={
