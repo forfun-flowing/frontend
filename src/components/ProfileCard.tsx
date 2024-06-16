@@ -33,11 +33,14 @@ const ProfileCard = ({ profileData, fileArrayContext }: ProfileCardProps) => {
 
       try {
         const image = await compressImage(file);
-        postFile(image, {
-          onSuccess: ({ id, path }) => {
-            append({ uuid: id, path });
+        postFile(
+          { file: image, objectType: 'profile' },
+          {
+            onSuccess: ({ id, path }) => {
+              append({ uuid: id, path });
+            },
           },
-        });
+        );
       } catch (error) {
         openToast({ message: '최대 용량 5MB를 초과했어요.', type: 'warning' });
       }
