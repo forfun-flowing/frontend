@@ -2,7 +2,7 @@ name: Frontend CD
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, main]
 
 jobs:
   build:
@@ -23,6 +23,6 @@ jobs:
           destination-repository-name: flowing-deployment
           user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }}
           commit-message: ${{ github.event.commits[0].message }}
-          target-branch: dev
+          target-branch: ${{ github.ref_name }}
       - name: Test get variable exported by push-to-another-repository
         run: echo $DESTINATION_CLONED_DIRECTORY
